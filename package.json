@@ -20,6 +20,7 @@
     "circomlib": "0.2.4",
     "jest": "^26.4.2",
     "maci-crypto": "0.3.2",
+    "maci-circuits": "0.7.4",
     "ts-jest": "^26.4.1",
     "typescript": "^4.0.3"
   }
