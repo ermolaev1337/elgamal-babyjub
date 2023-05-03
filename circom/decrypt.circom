@@ -21,7 +21,7 @@ template ElGamalDecrypt() {
     signal input c1[2];
     signal input c2[2];
     signal input xIncrement;
-    signal private input privKey;
+    signal input privKey;
     signal output out;
 
     // Convert the private key to bits

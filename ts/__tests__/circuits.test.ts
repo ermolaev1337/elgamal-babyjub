@@ -19,8 +19,6 @@ import {
     formatPrivKeyForBabyJub
 } from 'maci-crypto'
 
-import { babyJub } from 'circomlib'
-
 describe('snark circuits', () => {
     const plaintext = genRandomSalt()
     const encoded = encodeToMessage(plaintext)

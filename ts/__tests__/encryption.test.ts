@@ -9,8 +9,12 @@ describe('ElGamal encryption and decryption', () => {
     let ciphertext: ElGamalCiphertext
 
     it('Should encrypt and decrypt a plaintext', () => {
+        console.log('plaintext', plaintext)
         ciphertext = encrypt(plaintext, pubKey)
+        console.log('ciphertext', ciphertext)
         const decrypted = decrypt(privKey, ciphertext)
+        console.log('decrypted', decrypted)
+
         if (decrypted.toString() !== plaintext.toString()) {
             debugger
         }

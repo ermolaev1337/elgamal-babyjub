@@ -1,6 +1,8 @@
-import { encodeToMessage, decodeMessage, Message } from '../'
-import { babyJub } from 'circomlib'
-import { genRandomSalt } from 'maci-crypto'
+import {encodeToMessage, decodeMessage, Message} from '../'
+import {genRandomSalt} from 'maci-crypto'
+
+const {babyjub} = require('circomlibjs');
+const babyJub = babyjub
 
 describe('Elliptic curve message encoding and decoding', () => {
     const plaintext = genRandomSalt()
@@ -23,7 +25,7 @@ describe('Elliptic curve message encoding and decoding', () => {
     it('Stress test', () => {
         const MAX = 10
         expect.assertions(MAX)
-        for (let i = 0; i < MAX; i ++) {
+        for (let i = 0; i < MAX; i++) {
             const plaintext = genRandomSalt()
             const encoded = encodeToMessage(plaintext)
             const decoded = decodeMessage(encoded)

@@ -1,7 +1,10 @@
 import * as assert from 'assert'
 import * as path from 'path'
-const circom = require('circom')
-import { babyJub } from 'circomlib'
+
+const {babyjub} = require('circomlibjs');
+const babyJub = babyjub
+const wasmTester = require("circom_tester").wasm;
+
 import {
     genPubKey,
     genPrivKey,
@@ -10,11 +13,6 @@ import {
     PrivKey,
     genRandomSalt,
 } from 'maci-crypto'
-import {
-    executeCircuit,
-    getSignalByName,
-    compileAndLoadCircuit,
-} from 'maci-circuits'
 
 const F = babyJub.F
 
@@ -37,13 +35,13 @@ interface ElGamalCiphertext {
 /*
  * Converts an arbitrary BigInt, which must be less than the BabyJub field
  * size, into a Message. Each Message has a BabyJub curve point, and an
- * x-increment. 
+ * x-increment.
  *
  * @param original The value to encode. It must be less than the BabyJub field
  *                 size.
  */
 const encodeToMessage = (
-   original: BigInt
+    original: BigInt
 ): Message => {
     const randomVal = genPrivKey()
     const randomPoint = genPubKey(randomVal)
@@ -57,9 +55,9 @@ const encodeToMessage = (
     const xVal = randomPoint[0]
     const yVal = randomPoint[1]
 
-    const point: BabyJubPoint = { x: xVal, y: yVal }
+    const point: BabyJubPoint = {x: xVal, y: yVal}
 
-    return { point, xIncrement }
+    return {point, xIncrement}
 }
 
 /*
@@ -104,8 +102,8 @@ const encrypt = (
     )
 
     return {
-        c1: { x: c1Point[0], y: c1Point[1] },
-        c2: { x: c2Point[0], y: c2Point[1] },
+        c1: {x: c1Point[0], y: c1Point[1]},
+        c2: {x: c2Point[0], y: c2Point[1]},
         xIncrement: message.xIncrement,
     }
 }
@@ -133,7 +131,7 @@ const decrypt = (privKey: PrivKey, ciphertext: ElGamalCiphertext): BigInt => {
     )
 
     return decodeMessage(
-        { 
+        {
             point: {
                 x: decrypted[0],
                 y: decrypted[1],
@@ -167,9 +165,9 @@ const rerandomize = (
         [ciphertext.c2.x, ciphertext.c2.y],
     )
 
-    return { 
-        c1: { x: d1[0], y: d1[1] },
-        c2: { x: d2[0], y: d2[1] },
+    return {
+        c1: {x: d1[0], y: d1[1]},
+        c2: {x: d2[0], y: d2[1]},
         xIncrement: ciphertext.xIncrement,
     }
 }
@@ -178,18 +176,15 @@ const rerandomize = (
  * @param circuitPath The subpath to the circuit file (e.g.
  *     test/batchProcessMessage_test.circom)
  */
+
 const compileAndLoadCircuit = async (
     circuitPath: string
 ) => {
-
-    const circuit = await circom.tester(
-        path.join(
-            __dirname,
-            `../circom/${circuitPath}`,
-        ),
+    const fullPath = path.join(
+        __dirname,
+        `../circom/${circuitPath}`,
     )
-
-    await circuit.loadSymbols()
+    const circuit = await wasmTester(fullPath)
 
     return circuit
 }
@@ -198,11 +193,9 @@ const executeCircuit = async (
     circuit: any,
     inputs: any,
 ) => {
-
-    const witness = await circuit.calculateWitness(inputs, true)
+    const witness = await circuit.calculateWitness(inputs)
     await circuit.checkConstraints(witness)
     await circuit.loadSymbols()
-
     return witness
 }
 
